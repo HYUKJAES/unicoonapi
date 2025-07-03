@@ -7,7 +7,7 @@ services:
       dockerfile: docker/ubuntu/Dockerfile
     container_name: unicoonapi-dev
     ports:
-      - "8080:8080"        # 호스트:컨테이너 포트
+      - "8090:8090"        # 호스트:컨테이너 포트
     environment:
       - ENV=development
     volumes:

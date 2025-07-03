@@ -21,4 +21,4 @@ COPY ./app /app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["uvicorn", "unicoonapi:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
+CMD ["uvicorn", "unicoonapi:app", "--host", "0.0.0.0", "--port", "8090", "--reload"]
