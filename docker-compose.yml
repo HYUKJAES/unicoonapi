@@ -1,0 +1,20 @@
+version: "1.0"
+
+services:
+  unicoonapi:
+    build:
+      context: .
+      dockerfile: docker/ubuntu/Dockerfile
+    container_name: unicoonapi-dev
+    ports:
+      - "8080:8080"        # 호스트:컨테이너 포트
+    environment:
+      - ENV=development
+    volumes:
+      - ./app:/app         # 코드 실시간 반영
+    networks:
+      - unicoonapi-net
+
+networks:
+  unicoonapi-net:
+    driver: bridge
