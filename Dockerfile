@@ -28,4 +28,4 @@ COPY ./app ./app
 # 포트 설정
 EXPOSE 8090
 
-CMD ["uvicorn", "app.unicoonapi:app", "--host", "0.0.0.0", "--port", "8090", "--reload"]
+CMD ["sh", "-c", "uvicorn app.unicoonapi:app --host 0.0.0.0 --port ${PORT:-8090} --reload"]
