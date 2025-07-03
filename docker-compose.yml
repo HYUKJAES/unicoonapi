@@ -4,7 +4,7 @@ services:
   unicoonapi:
     build:
       context: .
-      dockerfile: docker/ubuntu/Dockerfile
+      dockerfile: Dockerfile
     container_name: unicoonapi-dev
     ports:
       - "8090:8090"        # 호스트:컨테이너 포트

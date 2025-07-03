@@ -25,7 +25,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY ./app ./app
-# 포트 설정
-EXPOSE 8090
 
-CMD ["sh", "-c", "uvicorn app.unicoonapi:app --host 0.0.0.0 --port ${PORT:-8090} --reload"]
+# Railway는 반드시 PORT 환경변수를 사용해야 함!
+EXPOSE 8080
+
+# CMD에서 포트를 환경변수로 받도록!
+CMD ["sh", "-c", "uvicorn app.unicoonapi:app --host 0.0.0.0 --port ${PORT:-8080} --reload"]
