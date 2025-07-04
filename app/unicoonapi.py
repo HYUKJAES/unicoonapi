@@ -64,8 +64,42 @@ json 같은 구분 문자 제외하고 앞에서 제시한 key로 구성된 Json
 키워드: {keyword}
 '''
 
+
+# GPT 프롬프트 생성
+PROMPT_TEMPLATE2 = '''
+너는 목표 관리 전문가야
+내가 키워드 하나 줄테니까 키워드와 연관 지어서 아래 내용들을 만들어줘
+
+* 공통내용
+- 모든 내용은 개조식으로 해줘
+- 맨 앞에 문구에 어울리는 이모티콘 하나씩 넣어줘
+- 센스 있는 문구들로 구성해줘
+- 최대한 간략하게 핵심 단어만 써줘
+
+제시한 키워드는 인생 사명,미션이야. 이를 달성하기 위한 목표를 3개 추천, 나열해줘. json 키는 cores 야.
+   - 목표는 막연한 것 말고 정량적 표시가 가능하고 장기적으로 실천해야하는 항목으로 적어줘
+
+결과를 내보낼 때 result로 절대 묶지 말아줘.
+반드시 예시처럼 JSON만, 코드블록 없이, key와 value 모두 쌍따옴표로 감싸서 리턴해줘.
+json 같은 구분 문자 제외하고 앞에서 제시한 key로 구성된 Json 형태로 만들어서 리턴시킬거야.
+
+키워드: {keyword}
+'''
+
+
 async def generate_mission(keyword: str) -> str:
     prompt = PROMPT_TEMPLATE.format(keyword=keyword)
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.7,
+        max_tokens=500
+    )
+    return response.choices[0].message.content
+
+# recommend-cores용 함수
+async def generate_cores(keyword: str) -> str:
+    prompt = PROMPT_TEMPLATE2.format(keyword=keyword)
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}],
@@ -84,6 +118,26 @@ async def generate_mission_endpoint(
     #     raise HTTPException(status_code=403, detail="유효하지 않은 사용자입니다.")
     try:
         gpt_result = await generate_mission(req.keyword)
+        # Json 파싱 시도 (GPT가 Json으로 반환한다고 가정)
+        import json
+        try:
+            result_json = json.loads(gpt_result)
+        except Exception:
+            result_json = {"result": gpt_result}
+        return JSONResponse(content=result_json)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/recommend-cores")
+async def recommend_cores_endpoint(
+    req: MissionRequest,
+    x_api_key: str = Header(...)
+):
+    # await verify_api_key(x_api_key)
+    # if not is_valid_user(req.user_id):
+    #     raise HTTPException(status_code=403, detail="유효하지 않은 사용자입니다.")
+    try:
+        gpt_result = await generate_cores(req.keyword)
         # Json 파싱 시도 (GPT가 Json으로 반환한다고 가정)
         import json
         try:
